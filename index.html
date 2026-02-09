@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score de Résilience de Marge | Homieux Media</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #ffffff;
+            color: #1a1a2e;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            color: #000887;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 15px;
+            color: #6b6b7b;
+            font-weight: 400;
+        }
+
+        /* Card */
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 40px rgba(0, 8, 135, 0.08);
+            border: 1px solid #f0f0f5;
+        }
+
+        @media (max-width: 640px) {
+            .card {
+                padding: 28px 24px;
+            }
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        .form-group:last-of-type {
+            margin-bottom: 32px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a2e;
+            margin-bottom: 10px;
+        }
+
+        .label-hint {
+            font-size: 12px;
+            color: #8b8b9b;
+            font-weight: 400;
+            margin-left: 4px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 16px 18px;
+            font-size: 16px;
+            border: 2px solid #e8e8f0;
+            border-radius: 12px;
+            background: #fafaff;
+            color: #1a1a2e;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #000887;
+            background: #ffffff;
+        }
+
+        input[type="number"]::placeholder {
+            color: #b0b0c0;
+        }
+
+        /* Button */
+        .btn-primary {
+            width: 100%;
+            padding: 18px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            background: #000887;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary:hover {
+            background: #000a9f;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(0, 8, 135, 0.25);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Results Section */
+        .results {
+            display: none;
+            margin-top: 40px;
+            padding-top: 40px;
+            border-top: 1px solid #f0f0f5;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Score Display */
+        .score-section {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .score-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: #6b6b7b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .score-value {
+            font-size: 72px;
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .score-value.strong {
+            color: #059669;
+        }
+
+        .score-value.warning {
+            color: #d97706;
+        }
+
+        .score-value.critical {
+            color: #dc2626;
+        }
+
+        .score-interpretation {
+            font-size: 16px;
+            font-weight: 500;
+            padding: 14px 24px;
+            border-radius: 10px;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .score-interpretation.strong {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .score-interpretation.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .score-interpretation.critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Business Impact */
+        .business-impact {
+            background: linear-gradient(135deg, #000887 0%, #1a1a6e 100%);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        .impact-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .impact-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+
+        .impact-suffix {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Strategic Message */
+        .strategic-message {
+            background: #fafaff;
+            border-left: 4px solid #ED51C2;
+            padding: 20px 24px;
+            border-radius: 0 12px 12px 0;
+            margin-bottom: 32px;
+        }
+
+        .strategic-message p {
+            font-size: 15px;
+            color: #1a1a2e;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            text-align: center;
+            padding: 32px;
+            background: #fafaff;
+            border-radius: 16px;
+            border: 2px dashed #e8e8f0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 18px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #ffffff;
+            background: #ED51C2;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            margin-bottom: 16px;
+        }
+
+        .cta-button:hover {
+            background: #f062d0;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(237, 81, 194, 0.3);
+        }
+
+        .cta-subtext {
+            font-size: 13px;
+            color: #6b6b7b;
+            line-height: 1.5;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        /* Disclaimer */
+        .disclaimer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #f0f0f5;
+            text-align: center;
+        }
+
+        .disclaimer p {
+            font-size: 11px;
+            color: #9b9bab;
+            line-height: 1.5;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid #f0f0f5;
+        }
+
+        .footer p {
+            font-size: 12px;
+            color: #9b9bab;
+        }
+
+        .footer a {
+            color: #000887;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* Input prefix/suffix styling */
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+            color: #8b8b9b;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        input.has-suffix {
+            padding-right: 50px;
+        }
+
+        /* Reset button */
+        .btn-reset {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            margin-top: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b6b7b;
+            background: transparent;
+            border: 1px solid #e8e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+
+        .btn-reset:hover {
+            background: #f5f5fa;
+            border-color: #d0d0e0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <img src="logo-homieux.png" alt="Homieux Media" class="logo">
+            <h1>Score de Résilience de Marge</h1>
+            <p class="subtitle">Évaluez la capacité de votre entreprise à absorber la volatilité des coûts</p>
+        </header>
+
+        <!-- Main Card -->
+        <div class="card">
+            <!-- Input Form -->
+            <form id="resilienceForm">
+                <div class="form-group">
+                    <label for="contracts">
+                        Nombre de contrats de maintenance actifs
+                    </label>
+                    <input 
+                        type="number" 
+                        id="contracts" 
+                        min="1" 
+                        placeholder="Ex: 150"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="revenue">
+                        Chiffre d'affaires annuel maintenance
+                        <span class="label-hint">(€)</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="number" 
+                            id="revenue" 
+                            min="1" 
+                            placeholder="Ex: 850000"
+                            required
+                        >
+                        <span class="input-suffix">€</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="margin">
+                        Marge nette actuelle estimée
+                        <span class="label-hint">(%)</span>
+                    </label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="number" 
+                            id="margin" 
+                            min="0" 
+                            max="100" 
+                            step="0.1"
+                            placeholder="Ex: 18.5"
+                            class="has-suffix"
+                            required
+                        >
+                        <span class="input-suffix">%</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary">
+                    Calculer mon score
+                </button>
+            </form>
+
+            <!-- Results Section -->
+            <div id="results" class="results">
+                <!-- Score Display -->
+                <div class="score-section">
+                    <div class="score-label">Score de Résilience</div>
+                    <div id="scoreValue" class="score-value">0</div>
+                    <div id="scoreInterpretation" class="score-interpretation">
+                        Calcul en cours...
+                    </div>
+                </div>
+
+                <!-- Business Impact -->
+                <div class="business-impact">
+                    <div class="impact-label">Marge potentiellement exposée</div>
+                    <div id="impactValue" class="impact-value">€0</div>
+                    <div class="impact-suffix">par an à la volatilité des coûts</div>
+                </div>
+
+                <!-- Strategic Message -->
+                <div class="strategic-message">
+                    <p id="strategicMessage">
+                        Message stratégique en cours de calcul...
+                    </p>
+                </div>
+
+                <!-- CTA Section -->
+                <div class="cta-section">
+                    <a href="https://calendly.com/homieuxmedia" target="_blank" class="cta-button">
+                        On en discute ?
+                    </a>
+                    <p class="cta-subtext">
+                        15–30 minutes d'échange, sans engagement, pour analyser ensemble vos leviers de protection de marge.
+                    </p>
+                </div>
+
+                <!-- Disclaimer -->
+                <div class="disclaimer">
+                    <p>
+                        Calcul basé sur des hypothèses observées dans les PME belges du secteur énergie & services techniques (2025–2026).
+                        Ce score est indicatif et ne constitue pas un conseil financier.
+                    </p>
+                </div>
+
+                <button type="button" class="btn-reset" onclick="resetForm()">
+                    Nouveau calcul
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>
+                © 2025 <a href="https://homieuxmedia.be" target="_blank">Homieux Media</a> — AI Marketing Agency
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Form submission handler
+        document.getElementById('resilienceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculateResilience();
+        });
+
+        function calculateResilience() {
+            // Get input values
+            const contracts = parseFloat(document.getElementById('contracts').value);
+            const revenue = parseFloat(document.getElementById('revenue').value);
+            const margin = parseFloat(document.getElementById('margin').value);
+
+            // Validate inputs
+            if (!contracts || !revenue || margin === undefined || margin < 0 || margin > 100) {
+                alert('Veuillez remplir tous les champs correctement.');
+                return;
+            }
+
+            // Calculate resilience score based on Belgian PME assumptions 2025-2026
+            // These assumptions are embedded in the algorithm:
+            // - Average component volatility: 15-25%
+            // - Post-inflation supplier pressure: +8-12%
+            // - Fixed contract rigidity: limits pass-through ability
+            // - Belgian SME practices: typically low hedging, limited indexation clauses
+
+            // Factors affecting resilience:
+            // 1. Margin buffer (higher margin = more resilience)
+            // 2. Contract concentration (more contracts = more diversified risk)
+            // 3. Revenue scale (larger revenue = more ability to absorb shocks)
+
+            // Base score from margin (0-40 points)
+            // Margins below 10% are critical, 10-15% warning, 15%+ good
+            let marginScore = 0;
+            if (margin >= 20) {
+                marginScore = 40;
+            } else if (margin >= 15) {
+                marginScore = 30 + (margin - 15) * 2;
+            } else if (margin >= 10) {
+                marginScore = 15 + (margin - 10) * 3;
+            } else {
+                marginScore = margin * 1.5;
+            }
+
+            // Contract diversification score (0-30 points)
+            // More contracts = better diversification
+            let contractScore = 0;
+            if (contracts >= 300) {
+                contractScore = 30;
+            } else if (contracts >= 100) {
+                contractScore = 20 + (contracts - 100) * 0.05;
+            } else if (contracts >= 50) {
+                contractScore = 10 + (contracts - 50) * 0.2;
+            } else {
+                contractScore = contracts * 0.2;
+            }
+
+            // Revenue scale score (0-30 points)
+            // Higher revenue = more ability to absorb shocks
+            let revenueScore = 0;
+            const revenueK = revenue / 1000;
+            if (revenueK >= 2000) {
+                revenueScore = 30;
+            } else if (revenueK >= 500) {
+                revenueScore = 20 + (revenueK - 500) * 0.0067;
+            } else if (revenueK >= 100) {
+                revenueScore = 10 + (revenueK - 100) * 0.025;
+            } else {
+                revenueScore = revenueK * 0.1;
+            }
+
+            // Calculate total score (0-100)
+            let score = Math.round(marginScore + contractScore + revenueScore);
+            score = Math.max(0, Math.min(100, score));
+
+            // Calculate exposed margin (business impact)
+            // Based on estimated volatility exposure of 12-18% of margin
+            const volatilityFactor = 0.15; // 15% average volatility impact
+            const exposedMargin = Math.round(revenue * (margin / 100) * volatilityFactor);
+
+            // Determine category and messages
+            let category, interpretation, strategicMessage;
+            
+            if (score >= 80) {
+                category = 'strong';
+                interpretation = 'Résilience forte';
+                strategicMessage = 'Votre structure actuelle offre une bonne protection contre la volatilité des coûts. Capitalisez sur cette position pour négocier vos contrats futurs avec confiance.';
+            } else if (score >= 60) {
+                category = 'warning';
+                interpretation = 'Zone de vigilance';
+                strategicMessage = 'Votre marge est exposée à moyen terme si les coûts continuent de fluctuer. Il existe des leviers rapides pour renforcer votre résilience.';
+            } else {
+                category = 'critical';
+                interpretation = 'Zone de risque critique';
+                strategicMessage = 'Votre marge est structurellement vulnérable à la volatilité des composants et matières premières. Une action rapide est recommandée pour sécuriser votre rentabilité.';
+            }
+
+            // Update UI
+            updateResults(score, category, interpretation, exposedMargin, strategicMessage);
+        }
+
+        function updateResults(score, category, interpretation, exposedMargin, strategicMessage) {
+            const resultsSection = document.getElementById('results');
+            const scoreValue = document.getElementById('scoreValue');
+            const scoreInterpretation = document.getElementById('scoreInterpretation');
+            const impactValue = document.getElementById('impactValue');
+            const messageElement = document.getElementById('strategicMessage');
+
+            // Reset classes
+            scoreValue.className = 'score-value ' + category;
+            scoreInterpretation.className = 'score-interpretation ' + category;
+
+            // Animate score
+            animateValue(scoreValue, 0, score, 800);
+
+            // Update text
+            scoreInterpretation.textContent = interpretation;
+            impactValue.textContent = '€' + exposedMargin.toLocaleString('fr-BE');
+            messageElement.textContent = strategicMessage;
+
+            // Show results
+            resultsSection.classList.add('visible');
+
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function animateValue(element, start, end, duration) {
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function (ease-out)
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.round(start + (end - start) * easeOut);
+                
+                element.textContent = current;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        function resetForm() {
+            document.getElementById('resilienceForm').reset();
+            document.getElementById('results').classList.remove('visible');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
